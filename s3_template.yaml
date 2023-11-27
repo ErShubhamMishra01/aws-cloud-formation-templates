@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "S3 Bucket"
+
+Parameters:
+  s3bname:
+    Description: Enter S3 bucket name
+    Type: String
+    MinLength: 3
+    MaxLength: 10
+    AllowedPattern: "[A-Za-z]+"
+
+Resources: 
+  bRourceNameA:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicReadWrite 
+      BucketName: !Ref s3bname
+      Tags:
+        - Key: test
+          Value: best
+Outputs:
+  BucketName:
+    Value: !Ref 'bRourceNameA'
+

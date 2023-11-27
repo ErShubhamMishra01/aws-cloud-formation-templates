@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: EC2 Template
+
+Parameters: 
+  Environment:
+    Description: Select EC2 Environment
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - production
+    Description: Select environment type from list
+
+Mappings:
+  EnvMap:
+    dev:
+      InstanceType: "t2.micro"
+      name: dev
+    staging:
+      InstanceType: "t2.medium"
+      name: staging
+    production:
+      InstanceType: "t2.large"
+      name: production
+
+Conditions:
+  createProResources: !Equals [!Ref Environment, production]
+
+Resources: 
+  EC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0d5bf08bc8017c83b
+      InstanceType: !FindInMap [EnvMap, !Ref Environment, InstanceType]
+      Monitoring: true
+      Tags:
+        - Key: Name
+          Value: !FindInMap [EnvMap, !Ref Environment, name]
+
+  MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Condition: createProResources
+    Properties:
+      InstanceId: !Ref EC2Instance2
+      VolumeId: !Ref ec2Volume
+      Device: /dev/sdh
+
+  ec2Volume:
+    Type: AWS::EC2::Volume
+    Condition: createProResources
+    Properties:
+      AvailabilityZone: !GetAtt EC2Instance2.AvailabilityZone
+      Size: 10
+      Tags:
+        - Key: Name
+          Value: !FindInMap [EnvMap, !Ref Environment, name]
+
+Outputs:
+  InstanceName:
+    Value: !Ref EC2Instance2

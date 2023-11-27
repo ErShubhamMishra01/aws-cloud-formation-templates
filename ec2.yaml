@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: EC2 Template
+
+Parameters: 
+  InstanceTypeParam:
+    Description: Select EC2 Instance Type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - m1.smal
+      - m1.large
+    Description: Select instance type from list
+
+
+Resources: 
+  myEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0d5bf08bc8017c83b
+      InstanceType: !Ref InstanceTypeParam
+      Monitoring: true
+      Tags:
+        - Key: TestEC2
+          Value: valueTestEC3
